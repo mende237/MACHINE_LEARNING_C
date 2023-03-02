@@ -7,8 +7,9 @@
 #include "headers/losses/losses.h"
 #include "headers/layers/Activation.h"
 #include "headers/layers/Activations.h"
-#include "headers/CNN/CNN.h"
 #include "headers/utilitaire/read_data.h"
+#include "headers/layers/Convolution_Layer.h"
+#include "headers/CNN/CNN.h"
 
 // void* toto(){
 //     int *a = calloc(3 , sizeof(int));
@@ -64,42 +65,50 @@ void free_data(void **data , int nbr_sample){
 
 
 int main(){
-    // printf()
-    // int  i = 0;
-    int nbr_sample = 5;
-    int nbr_target = 2;
-    int nbr_feature = 4;
-    int output_layer = (nbr_target == 2) ? 1 : nbr_target;
+    int i = 0 , j = 0;
+    Convolution_Layer layer = new_Convolution_Layer((Shapes){3 , 10 , 10} , (Shapes){3 , 2 , 2} , 2 , convolution_backward , convolution_backward);
+    for (i = 0; i < 2 ; i++)
+    {
+        printfArray(layer->biases[i] , True);
+    }
     
-    // void **data = generate_data(nbr_sample , nbr_feature , nbr_target);
+
+
+    
+    // int nbr_sample = 5;
+    // int nbr_target = 2;
+    // int nbr_feature = 4;
+    // int output_layer = (nbr_target == 2) ? 1 : nbr_target;
+    
+    // // void **data = generate_data(nbr_sample , nbr_feature , nbr_target);
+    // // Array *X_train = data[0];
+    // // Array *Y_train = data[1];
+    // int i = 0;
+    // void **data = read_csv("/home/dimitri/CNN_C/datasets/data.csv" , nbr_sample , nbr_feature + 1 , nbr_target);
     // Array *X_train = data[0];
     // Array *Y_train = data[1];
-    int i = 0;
-    void **data = read_csv("/home/dimitri/CNN_C/datasets/data.csv" , nbr_sample , nbr_feature + 1 , nbr_target);
-    Array *X_train = data[0];
-    Array *Y_train = data[1];
-    // for (i = 0; i < 5; i++)
-    // {
-    //     printfArray(X_train[i] , True);
-    //     printfArray(Y_train[i] , True);
-    // }
+    // // for (i = 0; i < 5; i++)
+    // // {
+    // //     printfArray(X_train[i] , True);
+    // //     printfArray(Y_train[i] , True);
+    // // }
     
-    // free_data(data , 5);
+    // // free_data(data , 5);
 
-    // Array inputs = randomArray(nbr_feature , 1 , 10 , 100);
-    // // Array y = randomArray(3 , 1 , 0 , 1);
-    int network_len = 4;
+    // // Array inputs = randomArray(nbr_feature , 1 , 10 , 100);
+    // // // Array y = randomArray(3 , 1 , 0 , 1);
+    // int network_len = 4;
     
-    Layer Network[] = {
-        new_dense(nbr_feature , 2 , -100 , 100 , dense_forward , dense_backward)->layer,
-        new_Activation(sigmoid , sigmoid_prime , activation_forward , activation_backward)->layer,
-        new_dense(2 , output_layer , -100 , 100 , dense_forward , dense_backward)->layer,
-        new_Activation(sigmoid , sigmoid_prime , activation_forward , activation_backward)->layer,
-        // new_Softmax(softmax_forward , softmax_backward)->layer
-    };
+    // Layer Network[] = {
+    //     new_dense(nbr_feature , 2 , -100 , 100 , dense_forward , dense_backward)->layer,
+    //     new_Activation(sigmoid , sigmoid_prime , activation_forward , activation_backward)->layer,
+    //     new_dense(2 , output_layer , -100 , 100 , dense_forward , dense_backward)->layer,
+    //     new_Activation(sigmoid , sigmoid_prime , activation_forward , activation_backward)->layer,
+    //     // new_Softmax(softmax_forward , softmax_backward)->layer
+    // };
 
 
-    train(Network , network_len , mse , mse_prime , 10 , X_train , Y_train ,0.1, nbr_sample);
+    // train(Network , network_len , mse , mse_prime , 10 , X_train , Y_train ,0.1, nbr_sample);
 
 
 

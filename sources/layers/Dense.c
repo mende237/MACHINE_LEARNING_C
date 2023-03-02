@@ -65,4 +65,5 @@ void free_dense_layer(Dense dense_layer){
     freeArray(dense_layer->weights);
     freeArray(dense_layer->bias);
     free(dense_layer->layer);
+    free(dense_layer);
 }
