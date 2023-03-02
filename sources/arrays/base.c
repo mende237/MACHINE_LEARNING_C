@@ -14,14 +14,14 @@ float float_rand( float min, float max )
 
 int **create_matrix_int(int n_ligne, int n_col)
 {
-    int **d = (int **)malloc(n_ligne * sizeof(int *));
+    int **d = (int **)calloc(n_ligne , sizeof(int *));
     if (d != NULL)
     {
 
         int i = 00;
         for (i = 0; i < n_ligne; i++)
         {
-            d[i] = (int *)malloc(n_col * sizeof(int));
+            d[i] = (int *)calloc(n_col , sizeof(int));
             if (d[i] == NULL)
             {
                 while (i > 0)
@@ -38,13 +38,13 @@ int **create_matrix_int(int n_ligne, int n_col)
 }
 double **create_matrix_double(int n_ligne, int n_col)
 {
-    double **d = (double **)malloc(n_ligne * sizeof(double *));
+    double **d = (double **)calloc(n_ligne , sizeof(double *));
     int i = 0;
     if (d != NULL)
     {
         for (i = 0; i < n_ligne; i++)
         {
-            d[i] = (double *)malloc(n_col * sizeof(double));
+            d[i] = (double *)calloc(n_col , sizeof(double));
             if (d[i] == NULL)
             {
                 while (i > 0)

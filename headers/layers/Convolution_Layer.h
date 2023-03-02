@@ -26,10 +26,10 @@ Convolution_Layer new_Convolution_Layer(Shapes input_shapes , Shapes kernel_laye
 void* convolution_forward(void *layer , void *inputs);
 void* convolution_backward(void *layer , void *output_gradient , double learning_rate);
 
-Array rotate_kernel(Array kernel);
+Array rotate_kernel_180(Array kernel);
 Array cross_corolation(Array input , Array kernel);
 Array valid_convolution(Array input , Array kernel);
-Array full_convolotion(Array  input , Array kernel);
+Array full_convolotion(Array  input , Array kernel , boolean rotate);
 
 void free_convolution_layer(Convolution_Layer convolition_layer);
 

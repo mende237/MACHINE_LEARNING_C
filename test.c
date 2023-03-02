@@ -67,11 +67,35 @@ void free_data(void **data , int nbr_sample){
 int main(){
     int i = 0 , j = 0;
     Convolution_Layer layer = new_Convolution_Layer((Shapes){3 , 10 , 10} , (Shapes){3 , 2 , 2} , 2 , convolution_backward , convolution_backward);
-    for (i = 0; i < 2 ; i++)
+    // for (i = 0; i < 3 ; i++)
+    // {
+    //     for (j = 0; j < 2; j++)
+    //     {
+    //         printfArray(layer->kernels[i][j] , True);
+    //     }
+        
+    // }
+    Array *inputs = calloc(3 , sizeof(Array));
+    for (i = 0; i < 3; i++)
     {
-        printfArray(layer->biases[i] , True);
+        inputs[i] = randomArray(10 , 10 , 0 , 255);
     }
     
+    Array *outputs = convolution_forward(layer , inputs);
+
+    // Array tab = randomArray(10 , 10 , 0 , 10);
+    // Array kernel = randomArray(2 , 2 , 0, 5);
+    // printfArray(tab , True);
+    // printfArray(kernel , True);
+    // printfArray(cross_corolation(tab , kernel) , True);
+    for (i = 0; i < 2; i++)
+    {
+        printfArray(outputs[i], True);
+    }
+    
+
+
+    free_convolution_layer(layer);
 
 
     

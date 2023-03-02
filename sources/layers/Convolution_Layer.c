@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include "../../headers/utilitaire/Shapes.h"
 #include "../../headers/layers/Convolution_Layer.h"
+#include "../../headers/arrays/base.h"
+#include "../../headers/arrays/Arrayc.h"
 
 
 Convolution_Layer new_Convolution_Layer(Shapes input_shapes , Shapes kernel_shapes , int depth , 
@@ -47,7 +49,29 @@ Convolution_Layer new_Convolution_Layer(Shapes input_shapes , Shapes kernel_shap
 }
 
 void* convolution_forward(void *layer , void *inputs){
+    Convolution_Layer conv_layer = (Convolution_Layer) layer;
+    Array *input_tabs = (Array*) inputs;
+    Array *output_tab = calloc(conv_layer->depth , sizeof(Array));
+    int i = 0 , j = 0;
 
+    for (j = 0; j < conv_layer->depth; j++)
+    {
+        Array array_result = calloc(1 , sizeof(ArrayStr));
+        array_result->data = create_matrix_double(conv_layer->output_shapes.height , conv_layer->output_shapes.width);
+        array_result->nRow = conv_layer->output_shapes.height;
+        array_result->nCol = conv_layer->output_shapes.width;
+        for (i = 0; i < conv_layer->input_shapes.depth; i++)
+        {   
+            Array temp = cross_corolation(input_tabs[i] , conv_layer->kernels[i][j]);
+            // printfArray(temp , True);
+            // printf("enter\n");
+            plusArray_r(array_result , temp , array_result);
+            freeArray(temp);
+        }
+        output_tab[j] = array_result;
+    }
+
+    return output_tab;
 }
 
 void* convolution_backward(void *layer , void *output_gradient , double learning_rate){
@@ -55,21 +79,59 @@ void* convolution_backward(void *layer , void *output_gradient , double learning
 }
 
 
-Array rotate_kernel(Array kernel){
+Array rotate_kernel_180(Array kernel){
+    double **result = create_matrix_double(kernel->nRow, kernel->nCol);
+    int i, j;
 
+    for (i = 0; i < kernel->nRow; i++)
+        for (j = 0; j < kernel->nCol; j++)
+            result[i][j] = kernel->data[kernel->nRow - i - 1][kernel->nCol - j - 1];
+
+    Array array = calloc(1 , sizeof(ArrayStr));
+    array->nRow = kernel->nRow;
+    array->nCol = kernel->nCol;
+    array->data = result;
+    return array;
 }
 
+//convolution sans rotation de filtre
 Array cross_corolation(Array input , Array kernel){
 
+    int height_output = input->nRow - kernel->nRow + 1; 
+    int width_output = input->nCol - kernel->nCol + 1;
+
+    double **result = create_matrix_double(height_output, width_output);
+    int i, j, u, v;
+
+    for (i = 0; i < height_output; i++)
+    {
+        for (j = 0; j < width_output; j++)
+        {
+            result[i][j] = 0;
+            for (u = 0; u < kernel->nRow; u++)
+                for (v = 0; v < kernel->nCol; v++)
+                    result[i][j] += input->data[i + u][j + v] * kernel->data[u][v];
+        }
+    }
+    Array array_result = malloc(sizeof(ArrayStr));
+    array_result->nRow = height_output;
+    array_result->nCol = width_output;
+    array_result->data = result;
+    // printf("h %d  w %d" , array->nRow , array->nCol);
+    return array_result;
 }
 
 Array valid_convolution(Array input , Array kernel){
-
+    
 }
 
+//
+Array full_convolotion_180(Array  input , Array kernel , boolean rotate){
 
-Array full_convolotion(Array  input , Array kernel){
+    Array kernel_180 = rotate_kernel_180(kernel);
 
+    freeArray(kernel_180);
+   
 }
 
 void free_convolution_layer(Convolution_Layer convolition_layer){
@@ -87,7 +149,6 @@ void free_convolution_layer(Convolution_Layer convolition_layer){
         }
         
     }
-
     free(convolition_layer->layer);
     free(convolition_layer);
 }
