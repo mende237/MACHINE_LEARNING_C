@@ -4,12 +4,15 @@ CFLAGS = -W -Wall -lm
 BASE_DIR_HEADER=../headers
 BASE_DIR_SOURCE=../sources
 BASE_DIR=..
-COMPILED_LIST=test.o base.o Arrayc.o Dense.o Layer.o utilitaire.o Softmax.o losses.o Activations.o Activation.o CNN.o read_data.o Convolution_Layer.o
+COMPILED_LIST=test.o base.o Arrayc.o Dense.o Layer.o utilitaire.o Softmax.o losses.o Activations.o Activation.o CNN.o read_data.o Convolution_Layer.o Reshapes.o
 
 
 test: $(COMPILED_LIST)
 	$(CC) -c $(BASE_DIR)/test.c -o test.o $(CFLAGS)
 	$(CC)  $(COMPILED_LIST) -lm -o $(BASE_DIR)/test $(CFLAGS)
+
+Reshapes.o: $(BASE_DIR_SOURCE)/layers/Reshapes.c Arrayc.o
+	$(CC) -c $(BASE_DIR_SOURCE)/layers/Reshapes.c $(CFLAGS)
 
 Convolution_Layer.o:$(BASE_DIR_SOURCE)/layers/Convolution_Layer.c
 	$(CC) -c $(BASE_DIR_SOURCE)/layers/Convolution_Layer.c Convolution_Layer.o $(CFLAGS)
