@@ -13,6 +13,7 @@
 #include "headers/utilitaire/read_data.h"
 #include "headers/layers/Convolution_Layer.h"
 #include "headers/CNN/CNN.h"
+#include "headers/layers/Reshapes.h"
 
 
 typedef struct timezone timezone_t;
@@ -86,12 +87,13 @@ void free_data(void **data , int nbr_sample){
 
 
 int main(){
+    srand(time(NULL));
     int i = 0 ,  j = 0;
 
     // convolution layer initialisation
 
 
-    Convolution_Layer layer = new_Convolution_Layer((Shapes){3 , 10 , 10} , (Shapes){3 , 2 , 2} , 2 , convolution_backward , convolution_backward);
+    // Layer layer = new_Convolution_Layer((Shapes){3 , 10 , 10} , (Shapes){3 , 2 , 2} , 2 , convolution_backward , convolution_backward)->layer;
     // for (i = 0; i < 3 ; i++)
     // {
     //     for (j = 0; j < 2; j++)
@@ -100,29 +102,34 @@ int main(){
     //     }
         
     // }
-    Array *inputs = calloc(3 , sizeof(Array));
-    for (i = 0; i < 3; i++)
+    int input_depth = 2;
+    int heigth = 3;
+    int width = 1;
+    Array *inputs = calloc(input_depth , sizeof(Array));
+    for (i = 0; i < input_depth; i++)
     {
-        inputs[i] = randomArray(10 , 10 , 0 , 255);
+        inputs[i] = randomArray(heigth , width , 0 , 10);
     }
     
 
 
-    //  forward pass in CNN
+    // //  forward pass in CNN
 
-    Array *outputs_gradient = convolution_forward(layer , inputs);
-    for (i = 0; i < 2; i++)
-    {
-        printfArray(outputs_gradient[i], True);
-    }
+    // Array *outputs_gradient = convolution_forward(layer->child_layer , inputs);
+    // for (i = 0; i < 2; i++)
+    // {
+    //     printfArray(outputs_gradient[i], True);
+    // }
 
 
-    Array *inputs_gradient = convolution_backward(layer , outputs_gradient , 0.1);
+    // Array *inputs_gradient = convolution_backward(layer->child_layer , outputs_gradient , 0.1);
 
-    for (i = 0; i < 3; i++)
-    {
-        printfArray(inputs_gradient[i] , True);
-    }
+    // for (i = 0; i < 3; i++)
+    // {
+    //     printfArray(inputs_gradient[i] , True);
+    // }
+
+
     
     // Array tab = randomArray(10 , 10 , 0 , 10);
     // Array kernel = randomArray(2 , 2 , 0, 5);
@@ -136,7 +143,22 @@ int main(){
     // }
     // free_convolution_layer(layer);
 
+    Layer layer = new_Reshape((Shapes){input_depth , heigth , width} , reshape_forward , reshape_backward)->layer;
+    for (i = 0; i < input_depth; i++)
+    {
+        printfArray(inputs[i] , True);
+    }
+    
+    Array flat = layer->forward(layer->child_layer , inputs);
 
+    printf("-----------------------------deflat---------------------------------------\n");
+    Array *deflat = layer->backward(layer->child_layer , flat , 0.1);
+
+    for (i = 0; i < input_depth; i++)
+    {
+        printfArray(deflat[i] , True);
+    }
+    
 
     // int nbr_sample = 5;
     // int nbr_target = 2;

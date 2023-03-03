@@ -15,6 +15,8 @@ Convolution_Layer new_Convolution_Layer(Shapes input_shapes , Shapes kernel_shap
     Convolution_Layer convolution = calloc(1 , sizeof(Convolution_Layer_s));
     convolution->layer = layer;
     convolution->layer->child_layer = convolution;
+    convolution->layer->forward = forward;
+    convolution->layer->backward = backward;
 
     convolution->input_shapes = input_shapes;
     convolution->kernel_shapes = kernel_shapes;

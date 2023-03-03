@@ -17,8 +17,8 @@ Dense new_dense(int input_size , int output_size , float init_min_weights , floa
                 void* (*backward)(void *layer , void* output_gradient, double learning_rate)
                 );
 
-void* dense_forward(void *layer , void *inputs);
-void* dense_backward(void *layer , void *output_gradient , double learning_rate);
+void* dense_forward(void *dense_layer , void *inputs);
+void* dense_backward(void *dense_layer , void *output_gradient , double learning_rate);
 void free_dense_layer(Dense dense_layer);
 
 #endif
