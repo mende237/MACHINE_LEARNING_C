@@ -44,7 +44,7 @@ void train(Layer *Network , int network_len,
         // printfArray(((Dense) Network[0]->child_layer)->weights , True);
         
         error /= data_len;
-        printf("error => %f\n" , error);
+        printf("Epoch  => %d error => %f\n" , epoch, error);
         epoch++;
      }        
 }

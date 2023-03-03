@@ -1,6 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include <sys/time.h>
+#include <limits.h>
+
 #include "headers/arrays/Arrayc.h"
 #include "headers/layers/Dense.h"
 #include "headers/layers/softmax.h"
@@ -11,42 +14,60 @@
 #include "headers/layers/Convolution_Layer.h"
 #include "headers/CNN/CNN.h"
 
-// void* toto(){
-//     int *a = calloc(3 , sizeof(int));
-//     int i = 0;
-//     for (i = 0; i < 3; i++)
-//     {
-//         a[i] = i;
-//         printf("%d\n" , a[0]);
-//     }
-//     printf("----------------------------\n");
-//     return a;
-// }
 
-void* generate_data(int nbr_sample , int nbr_feature , int nbr_target);
+typedef struct timezone timezone_t;
+typedef struct timeval timeval_t;
 
-void* generate_data(int nbr_sample , int nbr_feature , int nbr_target){
-    int i = 0;
-    Array *X_train = calloc(nbr_sample , sizeof(ArrayStr));
-    Array *Y_train = calloc(nbr_sample , sizeof(ArrayStr));
-    void **data = calloc(2 , sizeof(void*));
+timeval_t t1, t2;
+timezone_t tz;
 
-    for (i = 0; i < nbr_sample; i++)
-    {
-        // X_train[i] = valArray(nbr_feature , 1 , 1 * i);
-        // if(i%2 == 0){
-        //     Y_train[i] = valArray(nbr_target , 1 , 1);
-        // }else{
-        //     Y_train[i] = valArray(nbr_target , 1 , 0);
-        // }
 
-        X_train[i] = randomArray(nbr_feature , 1 , 0 , 10);
-        Y_train[i] = randomArray(nbr_target , 1 , 0 , 1);
-    }
-    data[0] = X_train;
-    data[1] = Y_train;
-    return data;
+static struct timeval _t1, _t2;
+static struct timezone _tz;
+timeval_t t1, t2;
+timezone_t tz;
+
+static unsigned long _temps_residuel = 0;
+#define top1() gettimeofday(&_t1, &_tz)
+#define top2() gettimeofday(&_t2, &_tz)
+
+void init_cpu_time(void)
+{
+   top1(); top2();
+   _temps_residuel = 1000000L * _t2.tv_sec + _t2.tv_usec -
+                     (1000000L * _t1.tv_sec + _t1.tv_usec );
 }
+
+unsigned long cpu_time(void) /* retourne des microsecondes */
+{
+   return 1000000L * _t2.tv_sec + _t2.tv_usec -
+           (1000000L * _t1.tv_sec + _t1.tv_usec ) - _temps_residuel;
+}
+
+// void* generate_data(int nbr_sample , int nbr_feature , int nbr_target);
+
+// void* generate_data(int nbr_sample , int nbr_feature , int nbr_target){
+//     int i = 0;
+//     Array *X_train = calloc(nbr_sample , sizeof(ArrayStr));
+//     Array *Y_train = calloc(nbr_sample , sizeof(ArrayStr));
+//     void **data = calloc(2 , sizeof(void*));
+
+//     for (i = 0; i < nbr_sample; i++)
+//     {
+//         // X_train[i] = valArray(nbr_feature , 1 , 1 * i);
+//         // if(i%2 == 0){
+//         //     Y_train[i] = valArray(nbr_target , 1 , 1);
+//         // }else{
+//         //     Y_train[i] = valArray(nbr_target , 1 , 0);
+//         // }
+
+//         X_train[i] = randomArray(nbr_feature , 1 , 0 , 10);
+//         Y_train[i] = randomArray(nbr_target , 1 , 0 , 1);
+//     }
+//     data[0] = X_train;
+//     data[1] = Y_train;
+//     return data;
+// }
 
 void free_data(void **data , int nbr_sample){
     if(data != NULL){
@@ -65,7 +86,11 @@ void free_data(void **data , int nbr_sample){
 
 
 int main(){
-    int i = 0 , j = 0;
+    int i = 0 ,  j = 0;
+
+    // convolution layer initialisation
+
+
     Convolution_Layer layer = new_Convolution_Layer((Shapes){3 , 10 , 10} , (Shapes){3 , 2 , 2} , 2 , convolution_backward , convolution_backward);
     // for (i = 0; i < 3 ; i++)
     // {
@@ -81,33 +106,47 @@ int main(){
         inputs[i] = randomArray(10 , 10 , 0 , 255);
     }
     
-    Array *outputs = convolution_forward(layer , inputs);
 
+
+    //  forward pass in CNN
+
+    Array *outputs_gradient = convolution_forward(layer , inputs);
+    for (i = 0; i < 2; i++)
+    {
+        printfArray(outputs_gradient[i], True);
+    }
+
+
+    Array *inputs_gradient = convolution_backward(layer , outputs_gradient , 0.1);
+
+    for (i = 0; i < 3; i++)
+    {
+        printfArray(inputs_gradient[i] , True);
+    }
+    
     // Array tab = randomArray(10 , 10 , 0 , 10);
     // Array kernel = randomArray(2 , 2 , 0, 5);
     // printfArray(tab , True);
     // printfArray(kernel , True);
     // printfArray(cross_corolation(tab , kernel) , True);
-    for (i = 0; i < 2; i++)
-    {
-        printfArray(outputs[i], True);
-    }
-    
+
+    // for (i = 0; i < 2; i++)
+    // {
+    //     printfArray(outputs[i], True);
+    // }
+    // free_convolution_layer(layer);
 
 
-    free_convolution_layer(layer);
 
-
-    
     // int nbr_sample = 5;
     // int nbr_target = 2;
     // int nbr_feature = 4;
     // int output_layer = (nbr_target == 2) ? 1 : nbr_target;
     
-    // // void **data = generate_data(nbr_sample , nbr_feature , nbr_target);
-    // // Array *X_train = data[0];
-    // // Array *Y_train = data[1];
-    // int i = 0;
+    // // // void **data = generate_data(nbr_sample , nbr_feature , nbr_target);
+    // // // Array *X_train = data[0];
+    // // // Array *Y_train = data[1];
+    // // int i = 0;
     // void **data = read_csv("/home/dimitri/CNN_C/datasets/data.csv" , nbr_sample , nbr_feature + 1 , nbr_target);
     // Array *X_train = data[0];
     // Array *Y_train = data[1];
@@ -117,10 +156,10 @@ int main(){
     // //     printfArray(Y_train[i] , True);
     // // }
     
-    // // free_data(data , 5);
+    // // // free_data(data , 5);
 
-    // // Array inputs = randomArray(nbr_feature , 1 , 10 , 100);
-    // // // Array y = randomArray(3 , 1 , 0 , 1);
+    // // // Array inputs = randomArray(nbr_feature , 1 , 10 , 100);
+    // // // // Array y = randomArray(3 , 1 , 0 , 1);
     // int network_len = 4;
     
     // Layer Network[] = {
@@ -131,9 +170,11 @@ int main(){
     //     // new_Softmax(softmax_forward , softmax_backward)->layer
     // };
 
-
+    // top1();
     // train(Network , network_len , mse , mse_prime , 10 , X_train , Y_train ,0.1, nbr_sample);
-
+    // top2();
+    // unsigned long temps = cpu_time();
+	// printf("\ntime sequentiel = %ld.%03ldms\n", temps/1000, temps%1000);
 
 
     // Layer s = new_Softmax(softmax_forward , softmax_backward)->layer;

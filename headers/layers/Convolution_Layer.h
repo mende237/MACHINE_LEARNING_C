@@ -28,8 +28,8 @@ void* convolution_backward(void *layer , void *output_gradient , double learning
 
 Array rotate_kernel_180(Array kernel);
 Array cross_corolation(Array input , Array kernel);
-Array valid_convolution(Array input , Array kernel);
-Array full_convolotion(Array  input , Array kernel , boolean rotate);
+// Array valid_convolution(Array input , Array kernel);
+Array full_convolotion_180(Array  input , Array kernel);
 
 void free_convolution_layer(Convolution_Layer convolition_layer);
 
