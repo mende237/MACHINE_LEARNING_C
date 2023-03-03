@@ -11,5 +11,5 @@ void train(Layer *Network , int network_len,
         int nbr_epoch , Array *X_train , Array *Y_train , double learning_rate, int data_size);
 
 
-Array predict(Layer *network , int network_len,  Array input);
+Array predict(Layer *network , int network_len,  void* input);
 #endif

@@ -58,6 +58,8 @@ void* reshape_backward(void *reshape_layer , void *output_gradient , double lear
 
     Array output_grad = (Array) output_gradient;
 
+    printfArray(output_grad , True);
+
     // double ***error_input = NULL;
     Array *error = calloc(reshape_l->input_shapes.depth , sizeof(Array));
     // __parameter_flatten_cnn pa = (__parameter_flatten_cnn)layer->parameters;

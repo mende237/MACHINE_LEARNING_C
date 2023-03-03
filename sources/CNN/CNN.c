@@ -1,6 +1,7 @@
 #include "../../headers/CNN/CNN.h"
 #include "../../headers/arrays/Arrayc.h"
 #include "../../headers/layers/Dense.h"
+#include "../../headers/layers/Reshapes.h"
 
 
 
@@ -9,9 +10,9 @@ void train(Layer *Network , int network_len,
         Array (*losse_prime)(Array y_pred , Array y_true), 
         int nbr_epoch , Array *X_train , Array *Y_train ,double learning_rate, int data_len){
     
-     int i = 0 , epoch = 0 , j = 0;
+     int i = 0 , epoch = 0 , j = 0 , k = 0;
      Array output = NULL;
-     Array grad = NULL;
+     void* grad = NULL;
     //  printf("enter\n");
      while (epoch < nbr_epoch)
      {
@@ -32,12 +33,31 @@ void train(Layer *Network , int network_len,
 
             grad = losse_prime(output , Y_train[i]);
             for (j = network_len - 1 ; j >= 0; j--)
-            {
-                
+            {   
+
                 grad = Network[j]->backward(Network[j]->child_layer , grad , learning_rate);
-                if (j != 0){
-                    freeArray((Array) Network[j]->inputs);
-                }
+                printf("dense..... %d\n" , j);
+                // if(j == 2){
+                //     printf("tooooooo\n");
+                //     for (k = 0; k <  ((Reshape) Network[j]->child_layer)->input_shapes.depth ; k++)
+                //     {
+                //         printfArray(((Array*) grad)[k] , True);
+                //     }
+                    
+                // }
+
+                // if(j == 3){
+                //     printf("tooooooo\n");
+                //     for (k = 0; k <  ((Reshape) Network[j]->child_layer)->input_shapes.depth ; k++)
+                //     {
+                //         printfArray(((Array*) grad)[k] , True);
+                //     }
+                    
+                // }
+                // if (j != 0){
+                //     freeArray(((Array*) Network[j]->inputs)[0]);
+                //     free(Network[j]->inputs);
+                // }
             }
             // printf("data %d\n" , i);
         }
@@ -50,8 +70,8 @@ void train(Layer *Network , int network_len,
 }
 
 //je dois faire les free au moment du backward
-Array predict(Layer *network , int network_len, Array input){
-    Array output = input;
+Array predict(Layer *network , int network_len, void *input){
+    void* output = input;
     int i = 0;
 
     // for (i = 0; i < network_len; i++)

@@ -28,15 +28,18 @@ void* activation_forward(void *activation_layer , void *inputs){
 
 
 void* activation_backward(void *activation_layer , void *output_gradient , double learning_rate){
+    // printf("enter sdhjgjhskdfsd\n");
     Activation act_layer = (Activation) activation_layer;
     // printfArray((Array) act_layer->layer->inputs , True);
     // printf("enter back activation\n");
     Array prime = (Array) act_layer->activation_prime(act_layer->layer->inputs);
-    Array result = matMulArray(output_gradient , prime);
+    Array result = mulArray(output_gradient , prime);
     freeArray(prime);
     freeArray(output_gradient);
     return result;
 }
+
+
 
 
 

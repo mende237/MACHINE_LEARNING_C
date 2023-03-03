@@ -4,7 +4,7 @@
 
 
 
-void** read_csv(char *filename, int rows, int cols, int nbr_targets);
+void** read_csv(char *filename, int rows, int cols,  int nbr_targets);
 
 
 #endif

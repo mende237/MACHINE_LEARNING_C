@@ -20,7 +20,7 @@ void** read_csv(char *filename, int rows, int cols , int  nbr_targets)
     if (file != NULL)
     {
         result = calloc(2 , sizeof(void *));
-        Array *X_train = calloc(rows , sizeof(Array));
+        Array **X_train = calloc(rows , sizeof(Array*));
         
         
         Array *Y_train = calloc(rows , sizeof(Array));
@@ -54,17 +54,18 @@ void** read_csv(char *filename, int rows, int cols , int  nbr_targets)
                     }
                 }
             }
-
+            Array *observation_tab = calloc(1 , sizeof(Array));
             Array observation = calloc(1, sizeof(ArrayStr));
             observation->data = mat_x;
             observation->nRow = cols -1;
             observation->nCol = 1;
+            observation_tab[0] = observation;
 
             Array target = calloc(1, sizeof(ArrayStr));
             target->data = mat_y;
             target->nRow = one_hot_len;
             target->nCol = 1;
-            X_train[i] = observation;
+            X_train[i] = observation_tab;
             Y_train[i] = target;
         }
         result[0] = X_train;
@@ -73,3 +74,5 @@ void** read_csv(char *filename, int rows, int cols , int  nbr_targets)
     }
     return NULL;
 }
+
+

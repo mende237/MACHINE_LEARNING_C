@@ -73,12 +73,12 @@ unsigned long cpu_time(void) /* retourne des microsecondes */
 void free_data(void **data , int nbr_sample){
     if(data != NULL){
         int i = 0;
-        Array *X_train = (Array*) data[0];
+        Array **X_train = (Array*) data[0];
         Array *Y_train = (Array*) data[1];
 
         for (i = 0; i < nbr_sample; i++)
         {
-            freeArray(X_train[i]);
+            freeArray(X_train[i][0]);
             freeArray(Y_train[i]);
         }
     }
@@ -93,7 +93,6 @@ int main(){
     // convolution layer initialisation
 
 
-    // Layer layer = new_Convolution_Layer((Shapes){3 , 10 , 10} , (Shapes){3 , 2 , 2} , 2 , convolution_backward , convolution_backward)->layer;
     // for (i = 0; i < 3 ; i++)
     // {
     //     for (j = 0; j < 2; j++)
@@ -112,8 +111,9 @@ int main(){
     }
     
 
+    // Layer layer = new_Convolution_Layer((Shapes){1 , heigth , width} , (Shapes){1 , 2 , 1} , 2 , convolution_backward , convolution_backward)->layer;
 
-    // //  forward pass in CNN
+    // // //  forward pass in CNN
 
     // Array *outputs_gradient = convolution_forward(layer->child_layer , inputs);
     // for (i = 0; i < 2; i++)
@@ -143,57 +143,72 @@ int main(){
     // }
     // free_convolution_layer(layer);
 
-    Layer layer = new_Reshape((Shapes){input_depth , heigth , width} , reshape_forward , reshape_backward)->layer;
-    for (i = 0; i < input_depth; i++)
-    {
-        printfArray(inputs[i] , True);
-    }
+    // Layer layer = new_Reshape((Shapes){input_depth , heigth , width} , reshape_forward , reshape_backward)->layer;
+    // for (i = 0; i < input_depth; i++)
+    // {
+    //     printfArray(inputs[i] , True);
+    // }
     
-    Array flat = layer->forward(layer->child_layer , inputs);
+    // Array flat = layer->forward(layer->child_layer , inputs);
 
-    printf("-----------------------------deflat---------------------------------------\n");
-    Array *deflat = layer->backward(layer->child_layer , flat , 0.1);
+    // printf("-----------------------------deflat---------------------------------------\n");
+    // Array *deflat = layer->backward(layer->child_layer , flat , 0.1);
 
-    for (i = 0; i < input_depth; i++)
-    {
-        printfArray(deflat[i] , True);
-    }
+    // for (i = 0; i < input_depth; i++)
+    // {
+    //     printfArray(deflat[i] , True);
+    // }
     
 
-    // int nbr_sample = 5;
-    // int nbr_target = 2;
-    // int nbr_feature = 4;
-    // int output_layer = (nbr_target == 2) ? 1 : nbr_target;
+    int nbr_sample = 5;
+    int nbr_target = 2;
+    int nbr_feature = 4;
+    int inputs_deep = 1;
+    int output_layer = (nbr_target == 2) ? 1 : nbr_target;
     
     // // // void **data = generate_data(nbr_sample , nbr_feature , nbr_target);
     // // // Array *X_train = data[0];
     // // // Array *Y_train = data[1];
     // // int i = 0;
-    // void **data = read_csv("/home/dimitri/CNN_C/datasets/data.csv" , nbr_sample , nbr_feature + 1 , nbr_target);
-    // Array *X_train = data[0];
-    // Array *Y_train = data[1];
-    // // for (i = 0; i < 5; i++)
-    // // {
-    // //     printfArray(X_train[i] , True);
-    // //     printfArray(Y_train[i] , True);
-    // // }
+    void **data = read_csv("/home/dimitri/CNN_C/datasets/data.csv" , nbr_sample , nbr_feature + 1  , nbr_target);
+    Array **X_train = data[0];
+    Array *Y_train = data[1];
+    // for (i = 0; i < nbr_sample; i++)
+    // {
+    //     printfArray(X_train[i][0] , True);
+    //     printfArray(Y_train[i] , True);
+    // }
     
     // // // free_data(data , 5);
 
     // // // Array inputs = randomArray(nbr_feature , 1 , 10 , 100);
     // // // // Array y = randomArray(3 , 1 , 0 , 1);
-    // int network_len = 4;
     
-    // Layer Network[] = {
-    //     new_dense(nbr_feature , 2 , -100 , 100 , dense_forward , dense_backward)->layer,
-    //     new_Activation(sigmoid , sigmoid_prime , activation_forward , activation_backward)->layer,
-    //     new_dense(2 , output_layer , -100 , 100 , dense_forward , dense_backward)->layer,
-    //     new_Activation(sigmoid , sigmoid_prime , activation_forward , activation_backward)->layer,
-    //     // new_Softmax(softmax_forward , softmax_backward)->layer
-    // };
+    Layer Network[] = {
+        new_Convolution_Layer((Shapes){1 , nbr_feature , 1} , (Shapes){1 , 2 , 1} , 2 , 
+        convolution_forward , convolution_backward)->layer,
+        // new_Activation(sigmoid , sigmoid_prime , activation_forward , )
+        new_Reshape((Shapes){2 , 3 , 1} , reshape_forward , reshape_backward)->layer,
+        new_dense(6 , 2 , -100 , 100 , dense_forward , dense_backward)->layer,
+        new_Activation(sigmoid , sigmoid_prime , activation_forward , activation_backward)->layer,
+        new_dense(2 , output_layer , -100 , 100 , dense_forward , dense_backward)->layer,
+        new_Activation(sigmoid , sigmoid_prime , activation_forward , activation_backward)->layer,
+        new_Softmax(softmax_forward , softmax_backward)->layer
+    };
+    int network_len = 7;
+
+
+    // Layer layer = new_Convolution_Layer((Shapes){1 , nbr_feature , 1} , (Shapes){1 , 2 , 1} , 2 , convolution_forward , convolution_backward)->layer;
+    // Array *outlayer = layer->forward(layer->child_layer , X_train[0]);
+    // for (i = 0; i < ((Convolution_Layer) layer->child_layer)->output_shapes.depth; i++)
+    // {
+    //     printfArray(outlayer[i] , True);
+    // }
+    
+    // predict(Network , network_len , X_train[0]);
 
     // top1();
-    // train(Network , network_len , mse , mse_prime , 10 , X_train , Y_train ,0.1, nbr_sample);
+    train(Network , network_len , mse , mse_prime , 10 , X_train , Y_train ,0.1, nbr_sample);
     // top2();
     // unsigned long temps = cpu_time();
 	// printf("\ntime sequentiel = %ld.%03ldms\n", temps/1000, temps%1000);
