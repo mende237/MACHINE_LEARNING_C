@@ -25,6 +25,7 @@ Reshape new_Reshape(Shapes input_shapes ,
 }
 
 void* reshape_forward(void *reshape_layer , void *inputs){
+
     Reshape reshape_l = (Reshape) reshape_layer;
     Array *input_tab = (Array*) inputs;
 
@@ -48,7 +49,7 @@ void* reshape_forward(void *reshape_layer , void *inputs){
             for (k = 0; k < reshape_l->input_shapes.width; k++)
                 output_array->data[i * kernel_size + j * kernel_width + k][0] = input_tab[i]->data[j][k];
     
-    // printfArray(output_array , True);
+    // printfArray(output_array , True);			
     return output_array;
 }
 
@@ -58,7 +59,7 @@ void* reshape_backward(void *reshape_layer , void *output_gradient , double lear
 
     Array output_grad = (Array) output_gradient;
 
-    printfArray(output_grad , True);
+    // printfArray(output_grad , True);
 
     // double ***error_input = NULL;
     Array *error = calloc(reshape_l->input_shapes.depth , sizeof(Array));
@@ -94,7 +95,6 @@ void* reshape_backward(void *reshape_layer , void *output_gradient , double lear
         error[i]->data[j][k] = output_grad->data[s][0];
     }
     
-
     freeArray((Array) output_gradient);
     
     return error;

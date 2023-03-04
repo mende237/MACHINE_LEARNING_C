@@ -9,8 +9,4 @@ typedef struct Shapes
 }Shapes;
 
 
-Shapes new_Shapes(int depth , int height , int width);
-void free_Shapes(Shapes Shapes);
-
-
 #endif

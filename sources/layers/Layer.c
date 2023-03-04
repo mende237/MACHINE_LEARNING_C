@@ -1,10 +1,12 @@
-#include "../../headers/layers/Layer.h"
 #include<stdlib.h>
+#include "../../headers/layers/Layer.h"
+
 
 
 Layer new_Layer(void* (*forward)(void *layer ,void *inputs),
                 void* (*backward)(void *layer , void* output_gradient, double learning_rate)){
 
+    
     Layer layer = (Layer) calloc(1 , sizeof(Layer_s));
     layer->forward = forward;
     layer->backward = backward;

@@ -1,9 +1,8 @@
+#include <math.h>
+#include <stdlib.h>
 #include "../../headers/layers/Activations.h"
 #include "../../headers/arrays/Arrayc.h"
 #include "../../headers/utilitaire/utilitaire.h"
-#include <math.h>
-
-#include <stdlib.h>
 
 void* sigmoid(void *inputs){
     Array result = constOpApplyArray((Array) inputs , -1 , mul_Array);// -inputs

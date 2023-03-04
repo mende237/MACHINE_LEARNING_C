@@ -1,6 +1,7 @@
 #ifndef LAYER_H
 #define LAYER_H
 
+
 typedef struct Layer
 {
     void *inputs;

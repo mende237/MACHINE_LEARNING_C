@@ -12,7 +12,7 @@ typedef struct Dense
     Array bias;
 } Dense_s , *Dense;
 
-Dense new_dense(int input_size , int output_size , float init_min_weights , float init_max_weights
+Dense new_Dense(int input_size , int output_size , float init_min_weights , float init_max_weights
                 ,void* (*forward)(void *layer ,void *inputs),
                 void* (*backward)(void *layer , void* output_gradient, double learning_rate)
                 );

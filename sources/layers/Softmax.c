@@ -1,9 +1,8 @@
+#include <math.h>
+#include <stdlib.h>
 #include "../../headers/layers/softmax.h"
 #include "../../headers/arrays/Arrayc.h"
 #include "../../headers/utilitaire/utilitaire.h"
-#include <math.h>
-
-#include <stdlib.h>
 
 Softmax new_Softmax(void* (*forward)(void *layer ,void *inputs),
                        void* (*backward)(void *layer , void* output_gradient, double learning_rate)){

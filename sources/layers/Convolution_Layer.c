@@ -38,9 +38,7 @@ Convolution_Layer new_Convolution_Layer(Shapes input_shapes , Shapes kernel_shap
             for (q = 0; q < convolution->output_shapes.width; q++)
             {
                 convolution->biases[i]->data[k][q] += 1; 
-                // printf("%f" , conv_layer->biases[i]->data[k][q]);
             }
-                // printfArray(conv_layer->biases[i] , )
         }
     }
 
@@ -65,34 +63,38 @@ Convolution_Layer new_Convolution_Layer(Shapes input_shapes , Shapes kernel_shap
 void* convolution_forward(void *layer , void *inputs){
     Convolution_Layer conv_layer = (Convolution_Layer) layer;
     Array *input_tabs = (Array*) inputs;
+    
+    
     conv_layer->layer->inputs = input_tabs;
     Array *output_tab = calloc(conv_layer->depth , sizeof(Array));
     int i = 0 , j = 0;
+    // for (i = 0; i < conv_layer->input_shapes.depth; i++)
+    // {
+    //    printfArray(input_tabs[i] , True);
+    // }
 
     for (j = 0; j < conv_layer->depth; j++)
     {
         Array array_result = zerosArray(conv_layer->output_shapes.height , conv_layer->output_shapes.width);
-        // array_result->data = create_matrix_double(conv_layer->output_shapes.height , conv_layer->output_shapes.width);
-        // array_result->nRow = conv_layer->output_shapes.height;
-        // array_result->nCol = conv_layer->output_shapes.width;
         for (i = 0; i < conv_layer->input_shapes.depth; i++)
         {   
             Array temp = cross_corolation(input_tabs[i] , conv_layer->kernels[i][j]);
             plusArray_r(array_result , temp , array_result);
             freeArray(temp);
         }
-        // plusArray_r(array_result , conv_layer->biases[j] , array_result);
+        plusArray_r(array_result , conv_layer->biases[j] , array_result);
         output_tab[j] = array_result;
     }
 
     conv_layer->layer->output = output_tab;
+
     return conv_layer->layer->output;
 }
 
 
 void* convolution_backward(void *layer , void *output_gradient , double learning_rate){
     int i = 0 , j = 0;
-    printf("-------------------biases-------------------------\n");
+    // printf("-------------------biases-------------------------\n");
     Convolution_Layer conv_layer = (Convolution_Layer) layer;
     Array **kernels_gradient = (Array**) calloc(conv_layer->input_shapes.depth , sizeof(Array*));
 
@@ -133,7 +135,6 @@ void* convolution_backward(void *layer , void *output_gradient , double learning
     // printf("---------------------------ljsidjpdsfo---------------------%d" , conv_layer->output_shapes.depth);
     for (i = 0; i < conv_layer->output_shapes.depth; i++)
     {
-        printfArray(((Array*) output_gradient)[i] , True);
         Array temp = constOpApplyArray(((Array*) output_gradient)[i] , -learning_rate , mul_Array);
         plusArray_r(conv_layer->biases[i] , temp , conv_layer->biases[i]);
         freeArray(temp);
@@ -145,6 +146,7 @@ void* convolution_backward(void *layer , void *output_gradient , double learning
         freeArray(((Array*) output_gradient)[i]);
     }
     
+
     return inputs_gradients;
 }
 

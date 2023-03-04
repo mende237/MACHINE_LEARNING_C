@@ -12,11 +12,11 @@ typedef struct Pooling
 }Pooling_s , *Pooling;
 
 
-Pooling new_Reshape(Shapes input_shapes , Shapes window_shapes , 
+Pooling new_Pooling(Shapes input_shapes , Shapes window_shapes , 
                     void* (*forward)(void *layer ,void *inputs),
                     void* (*backward)(void *layer , void* output_gradient, double learning_rate));
 
-void* reshape_forward(void *pooling_layer , void *inputs);
-void* reshape_backward(void *pooling_layer , void *output_gradient , double learning_rate);
+void* pooling_forward(void *pooling_layer , void *inputs);
+void* pooling_backward(void *pooling_layer , void *output_gradient , double learning_rate);
 
 #endif

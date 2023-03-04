@@ -2,7 +2,7 @@
 #define CONVOLUTION_H
 #include "Layer.h"
 #include "../../headers/arrays/Arrayc.h"
-#include "../../headers/utilitaire/Shapes.h";
+#include "../../headers/utilitaire/Shapes.h"
 
 typedef struct Convolution_Layer
 {

@@ -16,6 +16,8 @@
 #include "headers/layers/Reshapes.h"
 
 
+int NUM_THREADS = 8;
+
 typedef struct timezone timezone_t;
 typedef struct timeval timeval_t;
 
@@ -86,9 +88,11 @@ void free_data(void **data , int nbr_sample){
 
 
 
-int main(){
-    srand(time(NULL));
-    int i = 0 ,  j = 0;
+int main(int argc, char const *argv[]){
+
+
+    // srand(time(NULL));
+    // int i = 0 ,  j = 0;
 
     // convolution layer initialisation
 
@@ -101,14 +105,9 @@ int main(){
     //     }
         
     // }
-    int input_depth = 2;
-    int heigth = 3;
-    int width = 1;
-    Array *inputs = calloc(input_depth , sizeof(Array));
-    for (i = 0; i < input_depth; i++)
-    {
-        inputs[i] = randomArray(heigth , width , 0 , 10);
-    }
+    // int input_depth = 2;
+    // int heigth = 3;
+    // int width = 2;
     
 
     // Layer layer = new_Convolution_Layer((Shapes){1 , heigth , width} , (Shapes){1 , 2 , 1} , 2 , convolution_backward , convolution_backward)->layer;
@@ -160,12 +159,13 @@ int main(){
     // }
     
 
-    int nbr_sample = 5;
+    int nbr_sample = 100;
     int nbr_target = 2;
     int nbr_feature = 4;
-    int inputs_deep = 1;
-    int output_layer = (nbr_target == 2) ? 1 : nbr_target;
-    
+    int inputs_depth = 2;
+    int nbr_epoch = 10;
+    int nbr_output_layer = (nbr_target == 2) ? 1 : nbr_target;
+    int i = 0;
     // // // void **data = generate_data(nbr_sample , nbr_feature , nbr_target);
     // // // Array *X_train = data[0];
     // // // Array *Y_train = data[1];
@@ -178,6 +178,11 @@ int main(){
     //     printfArray(X_train[i][0] , True);
     //     printfArray(Y_train[i] , True);
     // }
+    Array *inputs = calloc(inputs_depth , sizeof(Array));
+    for (i = 0; i < inputs_depth; i++)
+    {
+        inputs[i] = randomArray(3 , 2 , 0 , 10);
+    }
     
     // // // free_data(data , 5);
 
@@ -187,13 +192,13 @@ int main(){
     Layer Network[] = {
         new_Convolution_Layer((Shapes){1 , nbr_feature , 1} , (Shapes){1 , 2 , 1} , 2 , 
         convolution_forward , convolution_backward)->layer,
-        // new_Activation(sigmoid , sigmoid_prime , activation_forward , )
+        new_Activation(2 , sigmoid , sigmoid_prime , activation_forward_depth , activation_backward_depth)->layer,
         new_Reshape((Shapes){2 , 3 , 1} , reshape_forward , reshape_backward)->layer,
-        new_dense(6 , 2 , -100 , 100 , dense_forward , dense_backward)->layer,
-        new_Activation(sigmoid , sigmoid_prime , activation_forward , activation_backward)->layer,
-        new_dense(2 , output_layer , -100 , 100 , dense_forward , dense_backward)->layer,
-        new_Activation(sigmoid , sigmoid_prime , activation_forward , activation_backward)->layer,
-        new_Softmax(softmax_forward , softmax_backward)->layer
+        new_Dense(6 , 2 , -100 , 100 , dense_forward , dense_backward)->layer,
+        new_Activation(2 , sigmoid , sigmoid_prime , activation_forward , activation_backward)->layer,
+        new_Dense(2 , nbr_output_layer , -100 , 100 , dense_forward , dense_backward)->layer,
+        new_Activation(2 , sigmoid , sigmoid_prime , activation_forward , activation_backward)->layer,
+        // new_Softmax(softmax_forward , softmax_backward)->layer dans le cas d'un probl
     };
     int network_len = 7;
 
@@ -204,14 +209,23 @@ int main(){
     // {
     //     printfArray(outlayer[i] , True);
     // }
+    // Layer layer =  new_Activation(inputs_depth , sigmoid , sigmoid_prime , activation_forward_depth , activation_backward_depth)->layer;
+    // Array *toto = layer->forward(layer->child_layer ,inputs);
+    // for (i = 0; i < inputs_depth; i++)
+    // {
+    //     printfArray(toto[i] , True);
+    // }
     
+    // Array *tata = layer->backward(layer->child_layer , toto , 0.001);
     // predict(Network , network_len , X_train[0]);
 
-    // top1();
-    train(Network , network_len , mse , mse_prime , 10 , X_train , Y_train ,0.1, nbr_sample);
-    // top2();
-    // unsigned long temps = cpu_time();
-	// printf("\ntime sequentiel = %ld.%03ldms\n", temps/1000, temps%1000);
+    top1();
+    printf("begin train\n");
+    train(Network , network_len , mse , mse_prime , nbr_epoch , X_train , Y_train ,0.1, nbr_sample);
+    printf("end train\n");
+    top2();
+    unsigned long temps = cpu_time();
+	printf("\ntime sequentiel = %ld.%03ldms\n", temps/1000, temps%1000);
 
 
     // Layer s = new_Softmax(softmax_forward , softmax_backward)->layer;

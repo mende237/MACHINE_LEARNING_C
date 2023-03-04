@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "../../headers/CNN/CNN.h"
 #include "../../headers/arrays/Arrayc.h"
 #include "../../headers/layers/Dense.h"
@@ -8,9 +9,9 @@
 void train(Layer *Network , int network_len,
         double (*losse)(Array y_pred , Array y_true) , 
         Array (*losse_prime)(Array y_pred , Array y_true), 
-        int nbr_epoch , Array *X_train , Array *Y_train ,double learning_rate, int data_len){
+        int nbr_epoch , Array **X_train , Array *Y_train ,double learning_rate, int data_len){
     
-     int i = 0 , epoch = 0 , j = 0 , k = 0;
+     int i = 0 , epoch = 0 , j = 0 ;
      Array output = NULL;
      void* grad = NULL;
     //  printf("enter\n");
@@ -19,6 +20,7 @@ void train(Layer *Network , int network_len,
         double error = 0;
         for (i = 0; i < data_len; i++)
         {
+            // printfArray(X_train[i][0] , True);
             //forward
             output = predict(Network , network_len , X_train[i]);
             // error
@@ -26,48 +28,20 @@ void train(Layer *Network , int network_len,
             error += losse(output , Y_train[i]);
             //backward
 
-            // printf("--------------predict--------------------\n");
-            // printfArray(output , True);
-            // printf("--------------reel--------------------\n");
-            // printfArray(Y_train[i] , True);
-
             grad = losse_prime(output , Y_train[i]);
             for (j = network_len - 1 ; j >= 0; j--)
             {   
-
                 grad = Network[j]->backward(Network[j]->child_layer , grad , learning_rate);
-                printf("dense..... %d\n" , j);
-                // if(j == 2){
-                //     printf("tooooooo\n");
-                //     for (k = 0; k <  ((Reshape) Network[j]->child_layer)->input_shapes.depth ; k++)
-                //     {
-                //         printfArray(((Array*) grad)[k] , True);
-                //     }
-                    
-                // }
-
-                // if(j == 3){
-                //     printf("tooooooo\n");
-                //     for (k = 0; k <  ((Reshape) Network[j]->child_layer)->input_shapes.depth ; k++)
-                //     {
-                //         printfArray(((Array*) grad)[k] , True);
-                //     }
-                    
-                // }
-                // if (j != 0){
-                //     freeArray(((Array*) Network[j]->inputs)[0]);
-                //     free(Network[j]->inputs);
-                // }
             }
-            // printf("data %d\n" , i);
+           
         }
-        // printfArray(((Dense) Network[0]->child_layer)->weights , True);
         
         error /= data_len;
         printf("Epoch  => %d error => %f\n" , epoch, error);
         epoch++;
      }        
 }
+
 
 //je dois faire les free au moment du backward
 Array predict(Layer *network , int network_len, void *input){

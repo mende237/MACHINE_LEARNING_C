@@ -4,7 +4,7 @@
 #include "../../headers/layers/Layer.h"
 #include "../../headers/arrays/Arrayc.h"
 
-Dense new_dense(int input_size , int output_size , float init_min_weights , float init_max_weights 
+Dense new_Dense(int input_size , int output_size , float init_min_weights , float init_max_weights 
                 ,void* (*forward)(void *layer ,void *inputs),
                 void* (*backward)(void *layer , void* output_gradient, double learning_rate)
                 ){
@@ -33,8 +33,7 @@ void* dense_backward(void *dense_layer , void *output_gradient , double learning
     //je dois libere l'ancienne entrer
     Dense dense = (Dense) dense_layer;
     Array input_T = transposeArray(dense->layer->inputs);
-
-    // printfArray((Array) dense->layer->inputs , True);
+    // printfArray((Array) output_gradient , True);
     // printfArray(dense->weights , True);
     Array weights_gradient = matMulArray((Array) output_gradient, input_T);
 
